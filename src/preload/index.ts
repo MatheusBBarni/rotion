@@ -1,7 +1,20 @@
-import { electronAPI } from '@electron-toolkit/preload'
-import { contextBridge } from 'electron'
+import { ElectronAPI, electronAPI } from '@electron-toolkit/preload'
+import { IPC } from '@shared/constants/ipc'
+import { FetchAllDocumentsResponse } from '@shared/types/ipc'
+import { contextBridge, ipcRenderer } from 'electron'
 
-const api = {}
+declare global {
+  export interface Window {
+    electron: ElectronAPI
+    api: typeof api
+  }
+}
+
+const api = {
+  fetchDocuments(): Promise<FetchAllDocumentsResponse> {
+    return ipcRenderer.invoke(IPC.DOCUMENTS.FETCH_ALL)
+  },
+}
 
 if (process.contextIsolated) {
   try {
